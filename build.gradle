@@ -1,0 +1,112 @@
+import org.panteleyev.jpackage.ImageType
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.javamodularity.moduleplugin' version '1.8.12'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.gradlex.extra-java-module-info' version '1.0'
+    id 'com.github.johnrengelman.shadow' version "7.1.0"
+    id 'org.panteleyev.jpackageplugin' version "1.5.2"
+    id 'edu.sc.seis.launch4j' version '3.0.5'
+}
+
+group 'com.demo'
+
+repositories {
+    mavenCentral()
+}
+
+tasks {
+    shadowJar {
+        exclude("module-info.class")
+    }
+
+    jpackage {
+        input = "build/libs"
+
+        appName = "ChemicalHardnness"
+        vendor = "Ilia Borisov"
+        appVersion = "1.0"
+//        icon = "icon.ico"
+
+        mainJar = "ChemicalHardness-all.jar"
+
+        destination = "jp"
+
+        windows {
+            type = ImageType.APP_IMAGE
+        }
+    }
+}
+
+ext {
+    junitVersion = '5.9.2'
+}
+
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainModule = 'com.demo.hardness'
+    mainClass = 'com.demo.hardness.Application'
+}
+
+javafx {
+    version = '17.0.6'
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
+}
+
+extraJavaModuleInfo {
+    failOnMissingModuleInfo.set(false)
+    module('commons-math3-3.6.1.jar', 'commons.math3', '3.6.1')
+    module('poi-5.2.4.jar', 'org.apache.poi', '5.2.4')
+    module('poi-ooxml-5.2.4.jar', 'org.apache.poi.ooxml', '5.2.4')
+}
+
+dependencies {
+    implementation('org.controlsfx:controlsfx:11.1.2')
+    implementation('com.dlsc.formsfx:formsfx-core:11.6.0') {
+        exclude(group: 'org.openjfx')
+    }
+    implementation('net.synedra:validatorfx:0.4.0') {
+        exclude(group: 'org.openjfx')
+    }
+    implementation('org.kordamp.ikonli:ikonli-javafx:12.3.1')
+    implementation('org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0')
+
+    implementation("org.hibernate.orm:hibernate-core:6.4.0.Final")
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+    implementation 'org.hibernate.common:hibernate-commons-annotations:6.0.6.Final'
+    implementation 'net.bytebuddy:byte-buddy:1.14.12'
+    implementation 'net.bytebuddy:byte-buddy-agent:1.14.12'
+
+    implementation 'jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.1'
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.4'
+
+    implementation('org.postgresql:postgresql:42.7.2')
+
+    implementation("org.apache.poi:poi:5.2.4")
+    implementation("org.apache.poi:poi-ooxml:5.2.4")
+
+    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.23.0'
+    implementation 'org.slf4j:slf4j-api:2.0.12'
+
+    implementation 'org.slf4j:slf4j-reload4j:2.0.12'
+    implementation 'org.apache.logging.log4j:log4j-core:2.23.0'
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+}
+
+test {
+    useJUnitPlatform()
+}
